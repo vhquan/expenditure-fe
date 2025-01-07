@@ -14,6 +14,8 @@
     };
 
     let selectedCategory = form?.expense?.category || '';
+    let showCategoryModal = false; // Controls the visibility of the category creation modal
+    let newCategoryName = ''; // Stores the new category name
 </script>
 
 <style>
@@ -51,11 +53,24 @@
         color: red;
         margin-top: 10px;
     }
+    .category-modal {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background: white;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+    .category-modal input {
+        margin-bottom: 10px;
+    }
 </style>
 
 <div class="form-container">
     <h2>Add Expense</h2>
-    <form method="POST" use:enhance>
+    <form method="POST" use:enhance action="?/createExpense">
         <div class="form-group">
             <label for="type">Type</label>
             <select id="type" name="type" bind:value={expense.type}>
@@ -101,12 +116,15 @@
 
         <div class="form-group">
             <label for="category">Category</label>
-            <select id="category" name="category" bind:value={selectedCategory} required>
-                <option value="">Select a category</option>
-                {#each data.categories as category}
-                    <option value={category._id}>{category.name}</option>
-                {/each}
-            </select>
+            <div style="display: flex; gap: 10px;">
+                <select id="category" name="category" bind:value={selectedCategory} required>
+                    <option value="">Select a category</option>
+                    {#each data.categories as category}
+                        <option value={category._id}>{category.name}</option>
+                    {/each}
+                </select>
+                <button type="button" on:click={() => showCategoryModal = true}>+ New Category</button>
+            </div>
         </div>
 
         <button type="submit">Add Expense</button>
@@ -115,4 +133,27 @@
     {#if form?.error}
         <p class="error">{form.error}</p>
     {/if}
+
+    {#if data.categories.length === 0}
+        <p>No categories found. Please create a new category.</p>
+    {/if}
 </div>
+
+{#if showCategoryModal}
+    <div class="category-modal">
+        <h3>Create New Category</h3>
+        <form method="POST" use:enhance action="?/createCategory">
+            <input
+                type="text"
+                name="name"
+                bind:value={newCategoryName}
+                placeholder="Enter category name"
+            />
+            <button type="submit">Create</button>
+            <button type="button" on:click={() => showCategoryModal = false}>Cancel</button>
+        </form>
+        {#if form?.categoryError}
+            <p class="error">{form.categoryError}</p>
+        {/if}
+    </div>
+{/if}
