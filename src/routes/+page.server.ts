@@ -43,8 +43,10 @@ export const actions: Actions = {
                 throw new Error(await response.text());
             }
 
-            // Redirect to the home page after successful submission
-            throw redirect(303, '/');
+            // Return success message
+            return {
+                success: 'Expense added successfully!',
+            };
         } catch (error) {
             return fail(500, { error: error.message, expense });
         }
@@ -76,9 +78,10 @@ export const actions: Actions = {
 
             const newCategory = await response.json();
 
-            // Return the new category to update the UI
+            // Return the new category and success message
             return {
                 newCategory,
+                categorySuccess: 'Category created successfully!',
             };
         } catch (error) {
             return fail(500, { categoryError: error.message });

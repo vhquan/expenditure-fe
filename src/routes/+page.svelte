@@ -1,5 +1,6 @@
 <script lang="ts">
     import { enhance } from '$app/forms';
+    import { fade } from 'svelte/transition'; // Import Svelte's fade transition
     import type { PageData } from './$types';
 
     export let data: PageData;
@@ -53,6 +54,10 @@
         color: red;
         margin-top: 10px;
     }
+    .success {
+        color: green;
+        margin-top: 10px;
+    }
     .category-modal {
         position: fixed;
         top: 50%;
@@ -65,6 +70,18 @@
     }
     .category-modal input {
         margin-bottom: 10px;
+    }
+
+    /* Shake animation for errors */
+    @keyframes shake {
+        0% { transform: translateX(0); }
+        25% { transform: translateX(-5px); }
+        50% { transform: translateX(5px); }
+        75% { transform: translateX(-5px); }
+        100% { transform: translateX(0); }
+    }
+    .shake {
+        animation: shake 0.5s ease-in-out;
     }
 </style>
 
@@ -131,7 +148,11 @@
     </form>
 
     {#if form?.error}
-        <p class="error">{form.error}</p>
+        <p class="error shake" transition:fade>{form.error}</p>
+    {/if}
+
+    {#if form?.success}
+        <p class="success" transition:fade>{form.success}</p>
     {/if}
 
     {#if data.categories.length === 0}
@@ -153,7 +174,10 @@
             <button type="button" on:click={() => showCategoryModal = false}>Cancel</button>
         </form>
         {#if form?.categoryError}
-            <p class="error">{form.categoryError}</p>
+            <p class="error shake" transition:fade>{form.categoryError}</p>
+        {/if}
+        {#if form?.categorySuccess}
+            <p class="success" transition:fade>{form.categorySuccess}</p>
         {/if}
     </div>
 {/if}
