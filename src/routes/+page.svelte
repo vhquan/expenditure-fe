@@ -1,89 +1,23 @@
 <script lang="ts">
-    import { enhance } from '$app/forms';
-    import { fade } from 'svelte/transition'; // Import Svelte's fade transition
-    import type { PageData } from './$types';
+    import { enhance } from "$app/forms";
+    import { fade } from "svelte/transition"; // Import Svelte's fade transition
+    import type { PageData } from "./$types";
 
     export let data: PageData;
     export let form;
 
     let expense = {
-        type: form?.expense?.type || 'expense',
+        type: form?.expense?.type || "expense",
         amount: form?.expense?.amount || 0,
-        description: form?.expense?.description || '',
-        date: form?.expense?.date || new Date().toISOString().split('T')[0],
-        category: form?.expense?.category || '',
+        description: form?.expense?.description || "",
+        date: form?.expense?.date || new Date().toISOString().split("T")[0],
+        category: form?.expense?.category || "",
     };
 
-    let selectedCategory = form?.expense?.category || '';
+    let selectedCategory = form?.expense?.category || "";
     let showCategoryModal = false; // Controls the visibility of the category creation modal
-    let newCategoryName = ''; // Stores the new category name
+    let newCategoryName = ""; // Stores the new category name
 </script>
-
-<style>
-    .form-container {
-        max-width: 400px;
-        margin: 0 auto;
-        padding: 20px;
-        border: 1px solid #ccc;
-        border-radius: 8px;
-        background-color: #f9f9f9;
-    }
-    .form-group {
-        margin-bottom: 15px;
-    }
-    label {
-        display: block;
-        margin-bottom: 5px;
-        font-weight: bold;
-    }
-    input, select, button {
-        width: 100%;
-        padding: 8px;
-        border: 1px solid #ccc;
-        border-radius: 4px;
-    }
-    button {
-        background-color: #007bff;
-        color: white;
-        cursor: pointer;
-    }
-    button:hover {
-        background-color: #0056b3;
-    }
-    .error {
-        color: red;
-        margin-top: 10px;
-    }
-    .success {
-        color: green;
-        margin-top: 10px;
-    }
-    .category-modal {
-        position: fixed;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        background: white;
-        padding: 20px;
-        border-radius: 8px;
-        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    }
-    .category-modal input {
-        margin-bottom: 10px;
-    }
-
-    /* Shake animation for errors */
-    @keyframes shake {
-        0% { transform: translateX(0); }
-        25% { transform: translateX(-5px); }
-        50% { transform: translateX(5px); }
-        75% { transform: translateX(-5px); }
-        100% { transform: translateX(0); }
-    }
-    .shake {
-        animation: shake 0.5s ease-in-out;
-    }
-</style>
 
 <div class="form-container">
     <h2>Add Expense</h2>
@@ -134,13 +68,22 @@
         <div class="form-group">
             <label for="category">Category</label>
             <div style="display: flex; gap: 10px;">
-                <select id="category" name="category" bind:value={selectedCategory} required>
+                <select
+                    id="category"
+                    name="category"
+                    bind:value={selectedCategory}
+                    required
+                >
                     <option value="">Select a category</option>
                     {#each data.categories as category}
                         <option value={category._id}>{category.name}</option>
                     {/each}
                 </select>
-                <button type="button" on:click={() => showCategoryModal = true}>+ New Category</button>
+                <button
+                    type="button"
+                    on:click={() => (showCategoryModal = true)}
+                    >+ New Category</button
+                >
             </div>
         </div>
 
@@ -160,6 +103,29 @@
     {/if}
 </div>
 
+<!-- Recent Transactions Widget -->
+<div
+    class="recent-transactions-widget"
+    style="max-width: 400px; margin-left: 20px;"
+>
+    <h2>Recent Transactions</h2>
+    <ul>
+        {#each data.recentTransactions as transaction}
+            <li>
+                <strong
+                    >{transaction.type.charAt(0).toUpperCase() +
+                        transaction.type.slice(1)}</strong
+                >: {transaction.amount} - {transaction.description}
+                <br />
+                <em>Date: {transaction.date}</em>
+            </li>
+        {/each}
+        {#if data.recentTransactions.length === 0}
+            <li>No recent transactions available.</li>
+        {/if}
+    </ul>
+</div>
+
 {#if showCategoryModal}
     <div class="category-modal">
         <h3>Create New Category</h3>
@@ -171,7 +137,9 @@
                 placeholder="Enter category name"
             />
             <button type="submit">Create</button>
-            <button type="button" on:click={() => showCategoryModal = false}>Cancel</button>
+            <button type="button" on:click={() => (showCategoryModal = false)}
+                >Cancel</button
+            >
         </form>
         {#if form?.categoryError}
             <p class="error shake" transition:fade>{form.categoryError}</p>
@@ -181,3 +149,100 @@
         {/if}
     </div>
 {/if}
+
+<style>
+    .form-container {
+        max-width: 400px;
+        margin: 0 auto;
+        padding: 20px;
+        border: 1px solid #ccc;
+        border-radius: 8px;
+        background-color: #f9f9f9;
+    }
+    .form-group {
+        margin-bottom: 15px;
+    }
+    label {
+        display: block;
+        margin-bottom: 5px;
+        font-weight: bold;
+    }
+    input,
+    select,
+    button {
+        width: 100%;
+        padding: 8px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+    }
+    button {
+        background-color: #007bff;
+        color: white;
+        cursor: pointer;
+    }
+    button:hover {
+        background-color: #0056b3;
+    }
+    .error {
+        color: red;
+        margin-top: 10px;
+    }
+    .success {
+        color: green;
+        margin-top: 10px;
+    }
+    .category-modal {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background: white;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+    .category-modal input {
+        margin-bottom: 10px;
+    }
+
+    /* Shake animation for errors */
+    @keyframes shake {
+        0% {
+            transform: translateX(0);
+        }
+        25% {
+            transform: translateX(-5px);
+        }
+        50% {
+            transform: translateX(5px);
+        }
+        75% {
+            transform: translateX(-5px);
+        }
+        100% {
+            transform: translateX(0);
+        }
+    }
+    .shake {
+        animation: shake 0.5s ease-in-out;
+    }
+
+    .recent-transactions-widget {
+        background-color: #fff;
+        border: 1px solid #ccc;
+        border-radius: 8px;
+        padding: 20px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
+    .recent-transactions-widget h2 {
+        margin-top: 0;
+    }
+    .recent-transactions-widget ul {
+        list-style-type: none;
+        padding: 0;
+    }
+    .recent-transactions-widget li {
+        border-bottom: 1px solid #eee;
+        padding: 10px 0;
+    }
+</style>

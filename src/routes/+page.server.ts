@@ -1,14 +1,25 @@
 import { BACKEND_API_URL } from '$env/static/private';
 import { fetchCategories } from '$lib/api/categories.server';
+import { fetchRecentTransactions } from '$lib/api/expenses.server';
 import { fail, redirect } from '@sveltejs/kit';
 import type { Actions, PageServerLoad } from './$types';
 
 export const load: PageServerLoad = async () => {
-    // Fetch categories from the backend
-    const categories = await fetchCategories();
-    return {
-        categories,
-    };
+    // Fetch categories & transactions from the backend
+    try {
+        const categories = await fetchCategories();
+        const recentTransactions = await fetchRecentTransactions();
+        return {
+            categories,
+            recentTransactions,
+        };
+    } catch (error) {
+        console.error(error);
+        return {
+            categories: [],
+            recentTransactions: [],
+        }
+    }
 };
 
 export const actions: Actions = {
