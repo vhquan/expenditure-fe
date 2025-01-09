@@ -331,6 +331,7 @@
 
     .transaction-category {
         font-size: 12px;
+        opacity: 0.8;
     }
 
     .no-transactions {
