@@ -59,8 +59,7 @@
     }
 
     let activePeriod = "daily"; // default active tab
-    // data for the pie chart
-    let categoryExpenses = {};
+    let currentChart: Chart | undefined;
 
     // Function to generate pie chart
     function createPieChart(period) {
@@ -110,14 +109,11 @@
 
     // Update the pie chart when the active period changes
     function updatePieChart() {
-        const chart = createPieChart(activePeriod);
         // Destroy the previous chart if it exists
-        if (chart) {
-            if (chart.destroy) {
-                chart.destroy();
-            }
+        if (currentChart) {
+            currentChart.destroy();
         }
-        createPieChart(activePeriod);
+        currentChart = createPieChart(activePeriod);
     }
 
     // Initialize the pie chart on mount
