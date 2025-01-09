@@ -57,173 +57,196 @@
     }
 </script>
 
-<div class="form-container">
-    <h2>Add Expense</h2>
-    <form method="POST" use:enhance action="?/createExpense">
-        <div class="form-group">
-            <label for="type">Type</label>
-            <select id="type" name="type" bind:value={expense.type}>
-                <option value="income">Income</option>
-                <option value="expense">Expense</option>
-            </select>
-        </div>
-
-        <div class="form-group">
-            <label for="amount">Amount</label>
-            <input
-                id="amount"
-                type="number"
-                name="amount"
-                bind:value={expense.amount}
-                min="0"
-                step="0.01"
-                required
-            />
-        </div>
-
-        <div class="form-group">
-            <label for="description">Description</label>
-            <input
-                id="description"
-                type="text"
-                name="description"
-                bind:value={expense.description}
-                placeholder="Enter a description"
-            />
-        </div>
-
-        <div class="form-group">
-            <label for="date">Date</label>
-            <input
-                id="date"
-                type="date"
-                name="date"
-                bind:value={expense.date}
-                required
-            />
-        </div>
-
-        <div class="form-group">
-            <label for="category">Category</label>
-            <div style="display: flex; gap: 10px;">
-                <select
-                    id="category"
-                    name="category"
-                    bind:value={selectedCategory}
-                    required
-                >
-                    <option value="">Select a category</option>
-                    {#each data.categories as category}
-                        <option value={category._id}>{category.name}</option>
-                    {/each}
+<div class="container">
+    <div class="form-container">
+        <h2>Add Expense</h2>
+        <form method="POST" use:enhance action="?/createExpense">
+            <div class="form-group">
+                <label for="type">Type</label>
+                <select id="type" name="type" bind:value={expense.type}>
+                    <option value="income">Income</option>
+                    <option value="expense">Expense</option>
                 </select>
-                <button
-                    type="button"
-                    on:click={() => (showCategoryModal = true)}
-                    >+ New Category</button
-                >
+            </div>
+
+            <div class="form-group">
+                <label for="amount">Amount</label>
+                <input
+                    id="amount"
+                    type="number"
+                    name="amount"
+                    bind:value={expense.amount}
+                    min="0"
+                    step="0.01"
+                    required
+                />
+            </div>
+
+            <div class="form-group">
+                <label for="description">Description</label>
+                <input
+                    id="description"
+                    type="text"
+                    name="description"
+                    bind:value={expense.description}
+                    placeholder="Enter a description"
+                />
+            </div>
+
+            <div class="form-group">
+                <label for="date">Date</label>
+                <input
+                    id="date"
+                    type="date"
+                    name="date"
+                    bind:value={expense.date}
+                    required
+                />
+            </div>
+
+            <div class="form-group">
+                <label for="category">Category</label>
+                <div style="display: flex; gap: 10px;">
+                    <select
+                        id="category"
+                        name="category"
+                        bind:value={selectedCategory}
+                        required
+                    >
+                        <option value="">Select a category</option>
+                        {#each data.categories as category}
+                            <option value={category._id}>{category.name}</option
+                            >
+                        {/each}
+                    </select>
+                    <button
+                        type="button"
+                        on:click={() => (showCategoryModal = true)}
+                        >+ New Category</button
+                    >
+                </div>
+            </div>
+
+            <button type="submit">Add Expense</button>
+        </form>
+
+        {#if form?.error}
+            <p class="error shake" transition:fade>{form.error}</p>
+        {/if}
+
+        {#if form?.success}
+            <p class="success" transition:fade>{form.success}</p>
+        {/if}
+
+        {#if data.categories.length === 0}
+            <p>No categories found. Please create a new category.</p>
+        {/if}
+    </div>
+    <!-- Recent Transactions Widget -->
+    <div class="recent-transactions-widget">
+        <!-- style="max-width: 300px; margin-left: 20px;" -->
+        <h3>Recent Transactions</h3>
+        <ul class="transaction-list">
+            {#each data.recentTransactions as transaction}
+                <li class="transaction">
+                    <div class="transaction-details">
+                        <table>
+                            <tbody>
+                                <tr>
+                                    <td
+                                        ><p>
+                                            {transaction.description}
+                                        </p>
+                                    </td>
+                                    <td>
+                                        <p class="transaction-date">
+                                            {formatDate(transaction.date)}
+                                        </p>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <p class="transaction-category">
+                                            {transaction.category.name}
+                                        </p>
+                                    </td>
+                                    <td>
+                                        <p>
+                                            {#if transaction.type === "income"}
+                                                <span class="income-amount">
+                                                    {formatAmount(
+                                                        transaction.amount,
+                                                        transaction.type,
+                                                    )}
+                                                </span>
+                                            {:else if transaction.type === "expense"}
+                                                <span class="expense-amount">
+                                                    {formatAmount(
+                                                        transaction.amount,
+                                                        transaction.type,
+                                                    )}
+                                                </span>
+                                            {/if}
+                                        </p>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </li>
+            {/each}
+            {#if data.recentTransactions.length === 0}
+                <li class="no-transactions">
+                    No recent transactions available.
+                </li>
+            {/if}
+        </ul>
+    </div>
+    {#if data.totals}
+        <!-- Display totals -->
+        <!-- Total Income and Expenses Widget -->
+        <div class="total-widget">
+            <!-- style="max-width: 300px; margin-left: 20px;" -->
+            <h3>Total Income and Expenses</h3>
+            <div class="total-section">
+                <h4>Daily</h4>
+                <p>
+                    Income: {formatAmount(data.totals.daily.income, "income")}
+                </p>
+                <p>
+                    Expenses: {formatAmount(
+                        data.totals.daily.expense,
+                        "expense",
+                    )}
+                </p>
+            </div>
+            <div class="total-section">
+                <h4>Weekly</h4>
+                <p>
+                    Income: {formatAmount(data.totals.weekly.income, "income")}
+                </p>
+                <p>
+                    Expenses: {formatAmount(
+                        data.totals.weekly.expense,
+                        "expense",
+                    )}
+                </p>
+            </div>
+            <div class="total-section">
+                <h4>Monthly</h4>
+                <p>
+                    Income: {formatAmount(data.totals.monthly.income, "income")}
+                </p>
+                <p>
+                    Expenses: {formatAmount(
+                        data.totals.monthly.expense,
+                        "expense",
+                    )}
+                </p>
             </div>
         </div>
-
-        <button type="submit">Add Expense</button>
-    </form>
-
-    {#if form?.error}
-        <p class="error shake" transition:fade>{form.error}</p>
-    {/if}
-
-    {#if form?.success}
-        <p class="success" transition:fade>{form.success}</p>
-    {/if}
-
-    {#if data.categories.length === 0}
-        <p>No categories found. Please create a new category.</p>
     {/if}
 </div>
-
-<!-- Recent Transactions Widget -->
-<div
-    class="recent-transactions-widget"
-    style="max-width: 300px; margin-left: 20px;"
->
-    <h3>Recent Transactions</h3>
-    <ul class="transaction-list">
-        {#each data.recentTransactions as transaction}
-            <li class="transaction">
-                <div class="transaction-details">
-                    <table>
-                        <tbody>
-                            <tr>
-                                <td
-                                    ><p>
-                                        {transaction.description}
-                                    </p>
-                                </td>
-                                <td>
-                                    <p class="transaction-date">
-                                        {formatDate(transaction.date)}
-                                    </p>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    <p class="transaction-category">
-                                        {transaction.category.name}
-                                    </p>
-                                </td>
-                                <td>
-                                    <p>
-                                        {#if transaction.type === "income"}
-                                            <span class="income-amount">
-                                                {formatAmount(
-                                                    transaction.amount,
-                                                    transaction.type,
-                                                )}
-                                            </span>
-                                        {:else if transaction.type === "expense"}
-                                            <span class="expense-amount">
-                                                {formatAmount(
-                                                    transaction.amount,
-                                                    transaction.type,
-                                                )}
-                                            </span>
-                                        {/if}
-                                    </p>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </li>
-        {/each}
-        {#if data.recentTransactions.length === 0}
-            <li class="no-transactions">No recent transactions available.</li>
-        {/if}
-    </ul>
-</div>
-
-{#if data.totals}
-    <!-- Display totals -->
-    <!-- Total Income and Expenses Widget -->
-<div class="total-widget" style="max-width: 300px; margin-left: 20px;">
-    <h3>Total Income and Expenses</h3>
-    <div class="total-section">
-        <h4>Daily</h4>
-        <p>Income: {formatAmount(data.totals.daily.income, "income")}</p>
-        <p>Expenses: {formatAmount(data.totals.daily.expense, "expense")}</p>
-    </div>
-    <div class="total-section">
-        <h4>Weekly</h4>
-        <p>Income: {formatAmount(data.totals.weekly.income, "income")}</p>
-        <p>Expenses: {formatAmount(data.totals.weekly.expense, "expense")}</p>
-    </div>
-    <div class="total-section">
-        <h4>Monthly</h4>
-        <p>Income: {formatAmount(data.totals.monthly.income, "income")}</p>
-        <p>Expenses: {formatAmount(data.totals.monthly.expense, "expense")}</p>
-    </div>
-</div>
-{/if}
 
 {#if showCategoryModal}
     <div class="category-modal">
@@ -251,8 +274,8 @@
 
 <style>
     .form-container {
-        max-width: 400px;
-        margin: 0 auto;
+        /* max-width: 400px; */
+        /* margin: 0 auto; */
         padding: 20px;
         border: 1px solid #ccc;
         border-radius: 8px;
@@ -443,5 +466,18 @@
     .total-section p {
         margin: 5px 0 0 0;
         font-size: 14px;
+    }
+
+    .container {
+        display: flex;
+        justify-content: space-between;
+        flex-wrap: nowrap;
+    }
+
+    .form-container,
+    .recent-transactions-widget,
+    .total-widget {
+        width: 30%;
+        box-sizing: border-box;
     }
 </style>
