@@ -351,4 +351,12 @@
         font-weight: bold;
         font-size: 12px;
     }
+
+    .income-amount::before {
+        content: "⬆ ";
+    }
+
+    .expense-amount::before {
+        content: "⬇ ";
+    }
 </style>
