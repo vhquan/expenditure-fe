@@ -1,5 +1,7 @@
 <script lang="ts">
+    import { Chart } from "chart.js/auto";
     import { enhance } from "$app/forms";
+    import { onMount } from "svelte";
     import { fade } from "svelte/transition"; // Import Svelte's fade transition
     import type { PageData } from "./$types";
 
@@ -55,6 +57,73 @@
         });
         return `${sign}${formattedAmount} VND`;
     }
+
+    let activePeriod = "daily"; // default active tab
+    // data for the pie chart
+    let categoryExpenses = {};
+
+    // Function to generate pie chart
+    function createPieChart(period) {
+        // Fetch category-wise expenses for the selected period
+        // For demonstration, assume data is available in data.totals[period].categoryExpenses
+        const expenses = data.totals[period].categoryExpenses;
+
+        const ctx = document.getElementById("pieChart")?.getContext("2d");
+        if (ctx) {
+            const pieChart = new Chart(ctx, {
+                type: "pie",
+                data: {
+                    labels: Object.keys(expenses),
+                    datasets: [
+                        {
+                            data: Object.values(expenses),
+                            backgroundColor: [
+                                "rgba(255, 99, 132, 0.2)",
+                                "rgba(54, 162, 235, 0.2)",
+                                "rgba(255, 206, 86, 0.2)",
+                                "rgba(75, 192, 192, 0.2)",
+                                "rgba(153, 102, 255, 0.2)",
+                            ],
+                            borderColor: [
+                                "rgba(255, 99, 132, 1)",
+                                "rgba(54, 162, 235, 1)",
+                                "rgba(255, 206, 86, 1)",
+                                "rgba(75, 192, 192, 1)",
+                                "rgba(153, 102, 255, 1)",
+                            ],
+                            borderWidth: 1,
+                        },
+                    ],
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: "right",
+                        },
+                    },
+                },
+            });
+            return pieChart;
+        }
+    }
+
+    // Update the pie chart when the active period changes
+    function updatePieChart() {
+        const chart = createPieChart(activePeriod);
+        // Destroy the previous chart if it exists
+        if (chart) {
+            if (chart.destroy) {
+                chart.destroy();
+            }
+        }
+        createPieChart(activePeriod);
+    }
+
+    // Initialize the pie chart on mount
+    onMount(() => {
+        updatePieChart();
+    });
 </script>
 
 <div class="container">
@@ -206,43 +275,64 @@
         <!-- Display totals -->
         <!-- Total Income and Expenses Widget -->
         <div class="total-widget">
-            <!-- style="max-width: 300px; margin-left: 20px;" -->
-            <h3>Total Income and Expenses</h3>
+            <nav>
+                <ul class="tabs">
+                    <li class={{ tab: true, active: activePeriod === "daily" }}>
+                        <a
+                            href="#"
+                            on:click={(e) => {
+                                e.preventDefault();
+                                activePeriod = "daily";
+                                updatePieChart();
+                            }}>Daily</a
+                        >
+                    </li>
+                    <li
+                        class={{ tab: true, active: activePeriod === "weekly" }}
+                    >
+                        <a
+                            href="#"
+                            on:click={(e) => {
+                                e.preventDefault();
+                                activePeriod = "weekly";
+                                updatePieChart();
+                            }}>Weekly</a
+                        >
+                    </li>
+                    <li
+                        class={{
+                            tab: true,
+                            active: activePeriod === "monthly",
+                        }}
+                    >
+                        <a
+                            href="#"
+                            on:click={(e) => {
+                                e.preventDefault();
+                                activePeriod = "monthly";
+                                updatePieChart();
+                            }}>Monthly</a
+                        >
+                    </li>
+                </ul>
+            </nav>
             <div class="total-section">
-                <h4>Daily</h4>
-                <p>
-                    Income: {formatAmount(data.totals.daily.income, "income")}
-                </p>
-                <p>
-                    Expenses: {formatAmount(
-                        data.totals.daily.expense,
-                        "expense",
-                    )}
-                </p>
-            </div>
-            <div class="total-section">
-                <h4>Weekly</h4>
-                <p>
-                    Income: {formatAmount(data.totals.weekly.income, "income")}
-                </p>
-                <p>
-                    Expenses: {formatAmount(
-                        data.totals.weekly.expense,
-                        "expense",
-                    )}
-                </p>
-            </div>
-            <div class="total-section">
-                <h4>Monthly</h4>
-                <p>
-                    Income: {formatAmount(data.totals.monthly.income, "income")}
-                </p>
-                <p>
-                    Expenses: {formatAmount(
-                        data.totals.monthly.expense,
-                        "expense",
-                    )}
-                </p>
+                <h3>Total Income and Expenses</h3>
+                <div class="total-details">
+                    <p>
+                        Income: {formatAmount(
+                            data.totals[activePeriod].income,
+                            "income",
+                        )}
+                    </p>
+                    <p>
+                        Expenses: {formatAmount(
+                            data.totals[activePeriod].expense,
+                            "expense",
+                        )}
+                    </p>
+                </div>
+                <canvas id="pieChart" width="400" height="400"></canvas>
             </div>
         </div>
     {/if}
@@ -479,5 +569,37 @@
     .total-widget {
         width: 30%;
         box-sizing: border-box;
+    }
+
+    .tabs {
+        display: flex;
+        list-style: none;
+        margin: 0;
+        padding: 0;
+    }
+
+    .tab {
+        flex: 1;
+        text-align: center;
+    }
+
+    .tab a {
+        display: block;
+        padding: 10px;
+        color: #333;
+        text-decoration: none;
+        border-bottom: 3px solid transparent;
+    }
+
+    .tab.active a {
+        border-bottom: 3px solid #007bff;
+    }
+
+    .total-widget .total-details {
+        margin-bottom: 20px;
+    }
+
+    .total-widget canvas {
+        max-width: 100%;
     }
 </style>

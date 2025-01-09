@@ -7,3 +7,9 @@ export interface Expense {
     date: string;
     category: Category;
 }
+
+export interface Totals {
+    income: number;
+    expense: number;
+    categoryExpenses: { [categoryName: string]: number };
+}

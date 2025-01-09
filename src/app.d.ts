@@ -2,6 +2,7 @@
 
 import type { Category } from "$lib/types/category";
 import type { Expense } from "$lib/types/expense";
+import type { Totals } from "$lib/types/expense";
 
 // for information about these interfaces
 declare global {
@@ -11,6 +12,11 @@ declare global {
 		interface PageData {
 			categories: Category[];
 			recentTransactions: Expense[];
+			totals: {
+				daily: Totals;
+				weekly: Totals;
+				monthly: Totals;
+			};
 		}
 		// interface PageState {}
 		// interface Platform {}

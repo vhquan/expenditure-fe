@@ -1,6 +1,6 @@
-import { type Expense } from "$lib/types/expense";
+import { type Expense, type Totals } from "$lib/types/expense";
 
-export function getTotals(expenses: Expense[], period: 'daily' | 'weekly' | 'monthly'): { income: number; expense: number } {
+export function getTotals(expenses: Expense[], period: 'daily' | 'weekly' | 'monthly'): Totals {
     const now = new Date();
     let startDate: Date;
 
@@ -25,14 +25,21 @@ export function getTotals(expenses: Expense[], period: 'daily' | 'weekly' | 'mon
 
     let income = 0;
     let expenseTotal = 0;
+    let categoryExpenses: { [categoryName: string]: number } = {};
 
     filteredExpenses.forEach(exp => {
         if (exp.type == 'income') {
             income += exp.amount;
         } else if (exp.type == 'expense') {
             expenseTotal += exp.amount;
+            const categoryName = exp.category.name;
+            if (categoryExpenses[categoryName]) {
+                categoryExpenses[categoryName] += exp.amount;
+            } else {
+                categoryExpenses[categoryName] = exp.amount;
+            }
         }
     });
 
-    return { income, expense: expenseTotal };
+    return { income, expense: expenseTotal, categoryExpenses };
 }
