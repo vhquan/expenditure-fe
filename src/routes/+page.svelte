@@ -135,34 +135,34 @@
     class="recent-transactions-widget"
     style="max-width: 400px; margin-left: 20px;"
 >
-    <h2>Recent Transactions</h2>
+    <h3>Recent Transactions</h3>
     <ul class="transaction-list">
         {#each data.recentTransactions as transaction}
             <li class="transaction">
                 <div class="transaction-details">
-                    <p>
-                        <strong>Amount:</strong>
-                        {#if transaction.type === "income"}
-                            <span class="income-amount"
-                                >{formatAmount(
-                                    transaction.amount,
-                                    transaction.type,
-                                )}</span
-                            >
-                        {:else if transaction.type === "expense"}
-                            <span class="expense-amount"
-                                >{formatAmount(
-                                    transaction.amount,
-                                    transaction.type,
-                                )}</span
-                            >
-                        {/if}
+                    <p class="transaction-date">
+                        {formatDate(transaction.date)}
                     </p>
                     <p>
-                        <strong>Description:</strong>
                         {transaction.description}
                     </p>
-                    <p><strong>Date:</strong> {formatDate(transaction.date)}</p>
+                    <p>
+                        {#if transaction.type === "income"}
+                            <span class="income-amount">
+                                {formatAmount(
+                                    transaction.amount,
+                                    transaction.type,
+                                )}
+                            </span>
+                        {:else if transaction.type === "expense"}
+                            <span class="expense-amount">
+                                {formatAmount(
+                                    transaction.amount,
+                                    transaction.type,
+                                )}
+                            </span>
+                        {/if}
+                    </p>
                 </div>
             </li>
         {/each}
@@ -289,7 +289,7 @@
 
     .transaction {
         display: flex;
-        align-items: center;
+        align-items: flex-start;
         padding: 10px 0;
         border-bottom: 1px solid #eee;
     }
@@ -301,11 +301,18 @@
 
     .transaction-details p {
         margin: 0;
-        font-size: 14px;
+        /* font-size: 14px; */
     }
 
     .transaction-details strong {
         font-weight: bold;
+    }
+
+    .transaction-date {
+        font-size: 12px;
+        margin-bottom: 5px;
+        font-style: italic;
+        opacity: 0.8;
     }
 
     .no-transactions {
@@ -314,24 +321,15 @@
         padding: 10px 0;
     }
 
-    /* Responsive styles */
-    @media (max-width: 768px) {
-        .transaction {
-            flex-direction: column;
-        }
-
-        .transaction-details {
-            margin-left: 0;
-        }
-    }
-
     .income-amount {
         color: green;
         font-weight: bold;
+        font-size: 12px;
     }
 
     .expense-amount {
         color: red;
         font-weight: bold;
+        font-size: 12px;
     }
 </style>
