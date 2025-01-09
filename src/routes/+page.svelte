@@ -17,6 +17,33 @@
     let selectedCategory = form?.expense?.category || "";
     let showCategoryModal = false; // Controls the visibility of the category creation modal
     let newCategoryName = ""; // Stores the new category name
+
+    function pad(number: number): string {
+        return number < 10 ? "0" + number : number.toString();
+    }
+
+    function formatDate(dateString: string): string {
+        const date = new Date(dateString);
+        if (isNaN(date.getTime())) {
+            return "Invalid date";
+        }
+        const day = pad(date.getDate());
+        const month = pad(date.getMonth() + 1);
+        const year = date.getFullYear();
+        return `${day}-${month}-${year}`;
+    }
+
+    function formatAmount(amount: number, type: string): string {
+        if (typeof amount !== "number" || isNaN(amount)) {
+            return "Invalid amount";
+        }
+        let sign = type === "expense" ? "-" : "";
+        let formattedAmount = Number(amount).toLocaleString("en-US", {
+            minimumFractionDigits: type === "expense" ? 2 : 0,
+            maximumFractionDigits: type === "expense" ? 2 : 2,
+        });
+        return `${sign}${formattedAmount} VND`;
+    }
 </script>
 
 <div class="form-container">
@@ -109,19 +136,38 @@
     style="max-width: 400px; margin-left: 20px;"
 >
     <h2>Recent Transactions</h2>
-    <ul>
+    <ul class="transaction-list">
         {#each data.recentTransactions as transaction}
-            <li>
-                <strong
-                    >{transaction.type.charAt(0).toUpperCase() +
-                        transaction.type.slice(1)}</strong
-                >: {transaction.amount} - {transaction.description}
-                <br />
-                <em>Date: {transaction.date}</em>
+            <li class="transaction">
+                <div class="transaction-details">
+                    <p>
+                        <strong>Amount:</strong>
+                        {#if transaction.type === "income"}
+                            <span class="income-amount"
+                                >{formatAmount(
+                                    transaction.amount,
+                                    transaction.type,
+                                )}</span
+                            >
+                        {:else if transaction.type === "expense"}
+                            <span class="expense-amount"
+                                >{formatAmount(
+                                    transaction.amount,
+                                    transaction.type,
+                                )}</span
+                            >
+                        {/if}
+                    </p>
+                    <p>
+                        <strong>Description:</strong>
+                        {transaction.description}
+                    </p>
+                    <p><strong>Date:</strong> {formatDate(transaction.date)}</p>
+                </div>
             </li>
         {/each}
         {#if data.recentTransactions.length === 0}
-            <li>No recent transactions available.</li>
+            <li class="no-transactions">No recent transactions available.</li>
         {/if}
     </ul>
 </div>
@@ -227,6 +273,7 @@
         animation: shake 0.5s ease-in-out;
     }
 
+    /* Styles for Recent Transactions Widget */
     .recent-transactions-widget {
         background-color: #fff;
         border: 1px solid #ccc;
@@ -234,15 +281,57 @@
         padding: 20px;
         box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
     }
-    .recent-transactions-widget h2 {
-        margin-top: 0;
-    }
-    .recent-transactions-widget ul {
+
+    .transaction-list {
         list-style-type: none;
         padding: 0;
     }
-    .recent-transactions-widget li {
-        border-bottom: 1px solid #eee;
+
+    .transaction {
+        display: flex;
+        align-items: center;
         padding: 10px 0;
+        border-bottom: 1px solid #eee;
+    }
+
+    .transaction-details {
+        flex: 1;
+        margin-left: 20px;
+    }
+
+    .transaction-details p {
+        margin: 0;
+        font-size: 14px;
+    }
+
+    .transaction-details strong {
+        font-weight: bold;
+    }
+
+    .no-transactions {
+        text-align: center;
+        color: #888;
+        padding: 10px 0;
+    }
+
+    /* Responsive styles */
+    @media (max-width: 768px) {
+        .transaction {
+            flex-direction: column;
+        }
+
+        .transaction-details {
+            margin-left: 0;
+        }
+    }
+
+    .income-amount {
+        color: green;
+        font-weight: bold;
+    }
+
+    .expense-amount {
+        color: red;
+        font-weight: bold;
     }
 </style>
