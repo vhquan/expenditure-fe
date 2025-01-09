@@ -1,4 +1,4 @@
-import { Category } from "./category";
+import { type Category } from "./category";
 
 export interface Expense {
     type: 'income' | 'expense';
