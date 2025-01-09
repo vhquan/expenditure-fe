@@ -313,20 +313,33 @@
                 </ul>
             </nav>
             <div class="total-section">
-                <h3>Total Income and Expenses</h3>
+                <h3>Analytics</h3>
                 <div class="total-details">
-                    <p>
-                        Income: {formatAmount(
-                            data.totals[activePeriod].income,
-                            "income",
-                        )}
-                    </p>
-                    <p>
-                        Expenses: {formatAmount(
-                            data.totals[activePeriod].expense,
-                            "expense",
-                        )}
-                    </p>
+                    <table>
+                        <tbody>
+                            <tr>
+                                <td style="font-style: italic;">Total Income</td
+                                >
+                                <td style="font-style: italic;"
+                                    >Total Expense</td
+                                >
+                            </tr>
+                            <tr>
+                                <td class="income-amount"
+                                    >{formatAmount(
+                                        data.totals[activePeriod].income,
+                                        "income",
+                                    )}</td
+                                >
+                                <td class="expense-amount"
+                                    >{formatAmount(
+                                        data.totals[activePeriod].expense,
+                                        "expense",
+                                    )}</td
+                                >
+                            </tr>
+                        </tbody>
+                    </table>
                 </div>
                 <canvas id="pieChart" width="400" height="400"></canvas>
             </div>
