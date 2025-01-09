@@ -18,19 +18,30 @@
     let showCategoryModal = false; // Controls the visibility of the category creation modal
     let newCategoryName = ""; // Stores the new category name
 
-    function pad(number: number): string {
-        return number < 10 ? "0" + number : number.toString();
-    }
+    const monthNames = [
+        "Jan",
+        "Feb",
+        "Mar",
+        "Apr",
+        "May",
+        "Jun",
+        "Jul",
+        "Aug",
+        "Sep",
+        "Oct",
+        "Nov",
+        "Dec",
+    ];
 
     function formatDate(dateString: string): string {
         const date = new Date(dateString);
         if (isNaN(date.getTime())) {
             return "Invalid date";
         }
-        const day = pad(date.getDate());
-        const month = pad(date.getMonth() + 1);
+        const day = date.getDate();
+        const month = monthNames[date.getMonth()];
         const year = date.getFullYear();
-        return `${day}-${month}-${year}`;
+        return `${day} ${month}, ${year}`;
     }
 
     function formatAmount(amount: number, type: string): string {
@@ -140,11 +151,11 @@
         {#each data.recentTransactions as transaction}
             <li class="transaction">
                 <div class="transaction-details">
-                    <p class="transaction-date">
-                        {formatDate(transaction.date)}
-                    </p>
                     <p>
                         {transaction.description}
+                    </p>
+                    <p class="transaction-category">
+                        {transaction.category.name}
                     </p>
                     <p>
                         {#if transaction.type === "income"}
@@ -162,6 +173,9 @@
                                 )}
                             </span>
                         {/if}
+                    </p>
+                    <p class="transaction-date">
+                        {formatDate(transaction.date)}
                     </p>
                 </div>
             </li>
@@ -313,6 +327,10 @@
         margin-bottom: 5px;
         font-style: italic;
         opacity: 0.8;
+    }
+
+    .transaction-category {
+        font-size: 12px;
     }
 
     .no-transactions {
