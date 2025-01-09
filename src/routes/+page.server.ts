@@ -1,6 +1,7 @@
 import { BACKEND_API_URL } from '$env/static/private';
 import { fetchCategories } from '$lib/api/categories.server';
-import { fetchRecentTransactions } from '$lib/api/expenses.server';
+import { fetchRecentTransactions, fetchAllExpenses } from '$lib/api/expenses.server';
+import { getTotals } from '$lib/utils/utils.server';
 import { fail, redirect } from '@sveltejs/kit';
 import type { Actions, PageServerLoad } from './$types';
 
@@ -9,16 +10,32 @@ export const load: PageServerLoad = async () => {
     try {
         const categories = await fetchCategories();
         const recentTransactions = await fetchRecentTransactions();
+        const expenses = await fetchAllExpenses();
+
+        const dailyTotals = getTotals(expenses, 'daily');
+        const weeklyTotals = getTotals(expenses, 'weekly');
+        const monthlyTotals = getTotals(expenses, 'monthly');
+
         return {
             categories,
             recentTransactions,
+            totals: {
+                daily: dailyTotals,
+                weekly: weeklyTotals,
+                monthly: monthlyTotals,
+            },
         };
     } catch (error) {
         console.error(error);
         return {
             categories: [],
             recentTransactions: [],
-        }
+            totals: {
+                daily: { income: 0, expense: 0 },
+                weekly: { income: 0, expense: 0 },
+                monthly: { income: 0, expense: 0 },
+            },
+        };
     }
 };
 

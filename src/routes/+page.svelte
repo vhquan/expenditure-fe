@@ -202,6 +202,29 @@
     </ul>
 </div>
 
+{#if data.totals}
+    <!-- Display totals -->
+    <!-- Total Income and Expenses Widget -->
+<div class="total-widget" style="max-width: 300px; margin-left: 20px;">
+    <h3>Total Income and Expenses</h3>
+    <div class="total-section">
+        <h4>Daily</h4>
+        <p>Income: {formatAmount(data.totals.daily.income, "income")}</p>
+        <p>Expenses: {formatAmount(data.totals.daily.expense, "expense")}</p>
+    </div>
+    <div class="total-section">
+        <h4>Weekly</h4>
+        <p>Income: {formatAmount(data.totals.weekly.income, "income")}</p>
+        <p>Expenses: {formatAmount(data.totals.weekly.expense, "expense")}</p>
+    </div>
+    <div class="total-section">
+        <h4>Monthly</h4>
+        <p>Income: {formatAmount(data.totals.monthly.income, "income")}</p>
+        <p>Expenses: {formatAmount(data.totals.monthly.expense, "expense")}</p>
+    </div>
+</div>
+{/if}
+
 {#if showCategoryModal}
     <div class="category-modal">
         <h3>Create New Category</h3>
@@ -383,7 +406,8 @@
     }
 
     /* Apply to table cells */
-    td, th {
+    td,
+    th {
         overflow: hidden; /* Hide any content that overflows */
         text-overflow: ellipsis; /* Show an ellipsis for overflowed content */
         white-space: nowrap; /* Prevent text from wrapping to a new line */
@@ -397,5 +421,27 @@
     /* Target the second td in each row and set text-align to right */
     td:nth-child(2) {
         text-align: right;
+    }
+
+    /* Total in daily, weekly, monthly */
+    .total-widget {
+        background-color: #fff;
+        border: 1px solid #ccc;
+        border-radius: 8px;
+        padding: 20px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
+
+    .total-section {
+        margin-bottom: 20px;
+    }
+
+    .total-section h4 {
+        margin-top: 0;
+    }
+
+    .total-section p {
+        margin: 5px 0 0 0;
+        font-size: 14px;
     }
 </style>

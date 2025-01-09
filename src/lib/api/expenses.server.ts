@@ -7,3 +7,11 @@ export async function fetchRecentTransactions() {
     }
     return response.json();
 }
+
+export async function fetchAllExpenses() {
+    const response = await fetch(`${BACKEND_API_URL}/api/v1/expenses`);
+    if (!response.ok) {
+        throw new Error('Failed to fetch expeneses');
+    }
+    return response.json();
+}
