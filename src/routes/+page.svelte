@@ -144,39 +144,55 @@
 <!-- Recent Transactions Widget -->
 <div
     class="recent-transactions-widget"
-    style="max-width: 400px; margin-left: 20px;"
+    style="max-width: 300px; margin-left: 20px;"
 >
     <h3>Recent Transactions</h3>
     <ul class="transaction-list">
         {#each data.recentTransactions as transaction}
             <li class="transaction">
                 <div class="transaction-details">
-                    <p>
-                        {transaction.description}
-                    </p>
-                    <p class="transaction-category">
-                        {transaction.category.name}
-                    </p>
-                    <p>
-                        {#if transaction.type === "income"}
-                            <span class="income-amount">
-                                {formatAmount(
-                                    transaction.amount,
-                                    transaction.type,
-                                )}
-                            </span>
-                        {:else if transaction.type === "expense"}
-                            <span class="expense-amount">
-                                {formatAmount(
-                                    transaction.amount,
-                                    transaction.type,
-                                )}
-                            </span>
-                        {/if}
-                    </p>
-                    <p class="transaction-date">
-                        {formatDate(transaction.date)}
-                    </p>
+                    <table>
+                        <tbody>
+                            <tr>
+                                <td
+                                    ><p>
+                                        {transaction.description}
+                                    </p>
+                                </td>
+                                <td>
+                                    <p class="transaction-date">
+                                        {formatDate(transaction.date)}
+                                    </p>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <p class="transaction-category">
+                                        {transaction.category.name}
+                                    </p>
+                                </td>
+                                <td>
+                                    <p>
+                                        {#if transaction.type === "income"}
+                                            <span class="income-amount">
+                                                {formatAmount(
+                                                    transaction.amount,
+                                                    transaction.type,
+                                                )}
+                                            </span>
+                                        {:else if transaction.type === "expense"}
+                                            <span class="expense-amount">
+                                                {formatAmount(
+                                                    transaction.amount,
+                                                    transaction.type,
+                                                )}
+                                            </span>
+                                        {/if}
+                                    </p>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
                 </div>
             </li>
         {/each}
@@ -352,11 +368,34 @@
         font-size: 12px;
     }
 
-    .income-amount::before {
+    /* .income-amount::before {
         content: "⬆ ";
     }
 
     .expense-amount::before {
         content: "⬇ ";
+    } */
+
+    /* Apply to the table element */
+    table {
+        width: 100%; /* Make the table take full width of the container */
+        table-layout: fixed; /* Fix the layout of the table */
+    }
+
+    /* Apply to table cells */
+    td, th {
+        overflow: hidden; /* Hide any content that overflows */
+        text-overflow: ellipsis; /* Show an ellipsis for overflowed content */
+        white-space: nowrap; /* Prevent text from wrapping to a new line */
+    }
+
+    /* Target the first td in each row and set text-align to left */
+    td:nth-child(1) {
+        text-align: left;
+    }
+
+    /* Target the second td in each row and set text-align to right */
+    td:nth-child(2) {
+        text-align: right;
     }
 </style>
